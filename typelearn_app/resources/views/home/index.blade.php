@@ -2,43 +2,39 @@
 @section('content')
 
 <div class="flex flex-col items-center justify-center min-h-screen">
-    <!-- タイトル -->
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-        TYPELEARN
-    </h1>
-    <h2 class="text-4xl font-bold text-gray-900 dark:text-gray-400 mb-8">
-        プログラミング学習のための
-    </h2>
-    <p class="text-4xl font-bold text-gray-600 dark:text-gray-700 mb-8">
-        タイピング・メモリー・システム
-    </p>
-
-    <x-borderline />
+    <x-section-header
+        logo="{{ '<x-application-logo />' }}"
+        subtitle="プログラミング学習のための"
+        description="タイピング・メモリー・システム"
+    />
 
     <!-- ボタン群 -->
     <div class="flex gap-16 justify-center">
-        <x-button
-            href="{{ route('login') }}"
-            text="LOGIN"
-            bgColor="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-            textColor="text-gray-900 dark:text-white"
-        />
-        <x-button
-            href="{{ route('register') }}"
-            text="REGISTER"
-            bgColor="bg-white dark:bg-gray-800"
-            textColor="text-black dark:text-white"
-        />
-        <x-button
-            href="{{ route('guest.dashboard') }}"
-            text="GUEST"
-            bgColor="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
-            textColor="text-gray-900 dark:text-white"
-        />
+        @guest
+        <x-button href="{{ route('login') }}" text="LOGIN" />
+        <x-button href="{{ route('register') }}" text="REGISTER" />
+        <x-button href="{{ route('dashboard') }}" text="GUEST" />
+        @endguest @auth
+        <form
+            class="flex justify-end"
+            method="POST"
+            action="{{ route('logout') }}"
+        >
+            @csrf
+            <button
+                type="submit"
+                class="flex items-center justify-center w-48 h-12 px-6 py-2 border border-gray-500 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+            >
+                LOGOUT
+            </button>
+        </form>
+        <x-button href="{{ route('dashboard') }}" text="DASHBOARD" />
+        @endauth
     </div>
 
+    <x-borderline width="w-[70%] mt-10" />
     <!-- 特徴セクション -->
-    <div class="flex gap-10 justify-center">
+    <div class="flex gap-20 justify-center mt-10">
         <!-- PRACTICE -->
         <div class="text-center w-48">
             <svg

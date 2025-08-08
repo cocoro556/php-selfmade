@@ -1,1 +1,3 @@
-<div class="w-64 h-5 bg-gray-400 dark:bg-gray-600 mb-16"></div>
+@props(['width' => ''])
+<div class="{{ $width }} border-t border-gray-400 dark:border-gray-600 m-3"></div>
+

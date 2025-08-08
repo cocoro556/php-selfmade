@@ -9,21 +9,38 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net" />
-        <link
-            href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap"
-            rel="stylesheet"
-        />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
-        <main class="flex-1">@yield('content')</main>
-
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         
-        <!-- フッター -->
-        @include('components.footer')
+    </head>
+    <body class="font-sans antialiased bg-gray-100 dark:bg-black">
+        <div id="particle-canvas" class="relative w-full min-h-screen flex flex-col">
+            <!-- 左上 -->
+            <div
+                class="fixed top-4 left-8 w-10 h-10 border-t-2 border-l-2 border-gray-500 z-50"
+            ></div>
+
+            <!-- 右上 -->
+            <div
+                class="fixed top-4 right-8 w-10 h-10 border-t-2 border-r-2 border-gray-500 z-50"
+            ></div>
+
+            <!-- 左下 -->
+            <div
+                class="fixed bottom-4 left-8 w-10 h-10 border-b-2 border-l-2 border-gray-500 z-50"
+            ></div>
+
+            <!-- 右下 -->
+            <div
+                class="fixed bottom-4 right-8 w-10 h-10 border-b-2 border-r-2 border-gray-500 z-50"
+            ></div>
+            <main class="flex-1">@yield('content')</main>
+
+            <!-- フッター -->
+            @include('components.footer')
         </div>
+        <script src="{{ asset('js/main.js') }}"></script>
     </body>
 </html>

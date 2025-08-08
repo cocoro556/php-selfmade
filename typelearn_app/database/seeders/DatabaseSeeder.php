@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\TemplateQuestionsSeeder;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\CategorySeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,5 +21,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // 既存データを削除（外部キー制約を考慮）
+        \DB::table('template_questions')->delete();
+        \DB::table('categories')->delete();
+
+        $this->call(CategorySeeder::class);
+        $this->call(TemplateQuestionsSeeder::class);
     }
 }

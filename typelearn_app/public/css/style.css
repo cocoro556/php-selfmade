@@ -1,0 +1,73 @@
+/* 共通設定 */
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* スクロールを無効にするが、フッターは表示 */
+html, body {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* メインコンテナの設定 */
+#particle-canvas {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* フッターの設定 */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+/* 通常モード：控えめな基本グリッド */
+body::before {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(128, 128, 128, 0.02) 1px, transparent 1px);
+    background-size:
+        160px 120px,
+        140px 160px;
+}
+
+/* 通常モード：控えめな追加グリッド */
+body::after {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(105, 105, 105, 0.05) 1px, transparent 1px);
+    background-size:
+        240px 180px,
+        200px 240px;
+}
+
+/* ダークモード：同様に薄く控えめに */
+.dark body::before {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(192, 192, 192, 0.02) 1px, transparent 1px);
+}
+
+.dark body::after {
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(169, 169, 169, 0.02) 1px, transparent 1px);
+}
