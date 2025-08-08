@@ -7,9 +7,19 @@
         subtitle="テンプレート問題を選択"
     />
     <div
-        class="flex flex-col items-center justify-center bg-gray-150 dark:bg-gray-900 py-5 px-20 border-2 border-gray-300 dark:border-gray-700"
+        class="flex flex-col items-center justify-center bg-gray-150 dark:bg-gray-900 py-1 px-16 border-2 border-gray-300 dark:border-gray-700"
     >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+            <x-category-card
+                href="{{ route('typing.select-difficulty', 'HTML') }}"
+                name="HTML"
+                description="マークアップ言語"
+            />
+            <x-category-card
+                href="{{ route('typing.select-difficulty', 'CSS') }}"
+                name="CSS"
+                description="スタイルシート言語"
+            />
             <x-category-card
                 href="{{ route('typing.select-difficulty', 'PHP') }}"
                 name="PHP"
@@ -29,16 +39,6 @@
                 href="{{ route('typing.select-difficulty', 'JavaScript') }}"
                 name="JavaScript"
                 description="Web開発言語"
-            />
-            <x-category-card
-                href="{{ route('typing.select-difficulty', 'HTML') }}"
-                name="HTML"
-                description="マークアップ言語"
-            />
-            <x-category-card
-                href="{{ route('typing.select-difficulty', 'CSS') }}"
-                name="CSS"
-                description="スタイルシート言語"
             />
             <x-category-card
                 href="{{ route('typing.select-difficulty', 'SQL') }}"

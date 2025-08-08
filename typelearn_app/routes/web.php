@@ -18,7 +18,7 @@ Route::get('/template-questions/category/{category}', [TemplateQuestions::class,
 
 // タイピング練習（実際の練習）
 Route::get('/typing', [TypingController::class, 'index'])->name('typing.index');
-Route::get('/typing/select-difficulty/{category}', [TypingController::class, 'selectDifficulty'])->name('typing.select-difficulty');
+Route::get('/typing/select-difficulty/{category?}', [TypingController::class, 'selectDifficulty'])->name('typing.select-difficulty');
 Route::get('/typing/answer-panel', [TypingController::class, 'answerPanel'])->name('typing.answer-panel');
 Route::get('/typing/result', [TypingController::class, 'result'])->name('typing.result');
 

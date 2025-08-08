@@ -43,8 +43,7 @@
     <div class="mt-8 text-center">
         <div class="mb-4">
             <x-button
-                href="{{ route('typing.answer-panel') }}"
-
+                href="{{ route('typing.answer-panel', ['category' => $category->name ?? null, 'difficulty' => 'random']) }}"
                 text="ランダムで出題"
                 bgColor="bg-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500"
                 textColor="text-black dark:text-white"

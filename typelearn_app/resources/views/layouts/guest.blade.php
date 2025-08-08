@@ -31,20 +31,22 @@
             ></div>
 
             <!-- 左下 -->
-            <divs
+            <div
                 class="fixed bottom-4 left-8 w-10 h-10 border-b-2 border-l-2 border-gray-500 z-50"
-            ></divs>
+            ></div>
 
             <!-- 右下 -->
             <div
                 class="fixed bottom-4 right-8 w-10 h-10 border-b-2 border-r-2 border-gray-500 z-50"
             ></div>
 
-                <main class="flex-1">@yield('content')</main>
+            <main class="flex-1">@yield('content')</main>
 
-                <!-- フッター -->
-                @include('components.footer')
-            </div>
+            <!-- フッター -->
+            @include('components.footer')
         </div>
+
+        <!-- main.jsを追加 -->
+        <script src="{{ asset('js/main.js') }}"></script>
     </body>
 </html>
