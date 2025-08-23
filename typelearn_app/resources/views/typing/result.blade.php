@@ -11,7 +11,7 @@
             練習完了!
         </p>
         <div class="flex justify-center flex-col items-center gap-7">
-            <x-button href="{{ route('template-questions.index') }}" text="もう一度練習" />
+            <x-button href="{{ route('questions.index') }}" text="もう一度練習" />
             <x-back-button href="{{ route('typing.index') }}" text="←ダッシュボードへ戻る" />
         </div>
     </div>

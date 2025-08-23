@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TemplateQuestion;
-use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\Question;
+use App\Models\Category;    
 
-class TemplateQuestions extends Controller
+class Questions extends Controller
 {
     public function index()
     {
         // カテゴリー一覧を取得
-        $categories = Category::withCount('templateQuestions')->get();
-        
-        return view('template-questions.index', compact('categories'));
+        $categories = Category::withCount('questions')->get();        
+        return view('questions.index', compact('categories'));
     }
 
     public function category($categoryName)
@@ -25,10 +24,10 @@ class TemplateQuestions extends Controller
         }
         
         // そのカテゴリーの問題一覧を取得
-        $questions = TemplateQuestion::where('category_id', $category->id)
+        $questions = Question::where('category_id', $category->id)
             ->with('category')
             ->get();
         
-        return view('template-questions.category', compact('category', 'questions'));
+        return view('questions.category', compact('category', 'questions'));
     }
 }

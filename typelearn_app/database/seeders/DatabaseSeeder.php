@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\TemplateQuestionsSeeder;
+use Database\Seeders\QuestionsSeeder;   
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,18 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // \DB::table('questions')->truncate();
+        // \DB::table('categories')->truncate();
+        // \DB::table('users')->truncate();
+        
+        $this->call([
+            CategorySeeder::class,    // カテゴリを先に作成
+            QuestionSeeder::class,    // 問題を作成
+            UserSeeder::class,        // ユーザーを作成
         ]);
-
-        // 既存データを削除（外部キー制約を考慮）
-        \DB::table('template_questions')->delete();
-        \DB::table('categories')->delete();
-
-        $this->call(CategorySeeder::class);
-        $this->call(TemplateQuestionsSeeder::class);
     }
 }

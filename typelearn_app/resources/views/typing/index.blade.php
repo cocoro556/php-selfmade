@@ -13,7 +13,7 @@
 
         <div class="flex gap-4">
             <x-button
-                href="{{ route('template-questions.index') }}"
+                href="{{ route('questions.index') }}"
                 text="テンプレート問題"
                 bgColor="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
                 textColor="text-gray-900 dark:text-white"

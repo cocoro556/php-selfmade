@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TypingController;
-use App\Http\Controllers\TemplateQuestions;
+use App\Http\Controllers\Questions;
 
 // ホームページ
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -13,8 +13,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
 // テンプレート問題管理（問題一覧・詳細）
-Route::get('/template-questions', [TemplateQuestions::class, 'index'])->name('template-questions.index');
-Route::get('/template-questions/category/{category}', [TemplateQuestions::class, 'category'])->name('template-questions.category');
+Route::get('/questions', [Questions::class, 'index'])->name('questions.index');
+Route::get('/questions/category/{category}', [Questions::class, 'category'])->name('questions.category');
 
 // タイピング練習（実際の練習）
 Route::get('/typing', [TypingController::class, 'index'])->name('typing.index');
@@ -28,5 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// 認証不要なルート（check-answerをここに移動）
+Route::post('/typing/check-answer', [TypingController::class, 'checkAnswer'])->name('typing.check-answer');
+Route::post('/typing/get-next-question', [TypingController::class, 'getNextQuestion'])->name('typing.get-next-question');
 
 require __DIR__.'/auth.php';

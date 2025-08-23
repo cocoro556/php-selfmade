@@ -51,7 +51,7 @@
         </div>
         <div class="mb-4">
             <x-back-button
-                href="{{ route('template-questions.index') }}"
+                href="{{ route('questions.index') }}"
                 text="←問題タイプ選択に戻る"
                 textColor="text-gray-900 dark:text-white"
             />
