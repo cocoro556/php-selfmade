@@ -9,11 +9,15 @@ class Answer extends Model
     public $timestamps = false;
     
     protected $fillable = [
-        // 'user_id',
+        'user_id',
         'question_id',
         'answer_text',
         'is_correct',
         'time_taken',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
     ];
 
     public function question()

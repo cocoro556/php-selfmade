@@ -3,6 +3,10 @@
 <div class="flex flex-col items-center justify-center min-h-screen">
     <x-section-header subtitle="問題一覧" description="問題を管理" />
     <div class="flex flex-col items-center justify-center gap-10 w-full">
+        <x-button
+            href="{{ route('questions.create') }}"
+            text="新しい問題を作成"
+        />
         @if(isset($questions) && count($questions))
         <div class="w-full max-w-5xl flex flex-col gap-6">
             @foreach($questions as $q)
@@ -57,10 +61,6 @@
         <div class="text-gray-400">まだ登録された問題がありません。</div>
         @endif
 
-        <x-button
-            href="{{ route('questions.create') }}"
-            text="新しい問題を作成"
-        />
         <x-button href="{{ route('dashboard') }}" text="トップへ戻る" />Ï
     </div>
     @endsection

@@ -20,7 +20,7 @@
         @auth
         <x-button href="{{ route('questions.list') }}" text="問題を管理" />
         @endauth @auth
-        <x-button href="{{ route('typing.index') }}" text="学習履歴" />
+        <x-button href="{{ route('typing.history') }}" text="学習履歴" />
         @endauth
     </div>
 

@@ -47,6 +47,7 @@
             id="current-difficulty"
             value="{{ request()->query('difficulty') }}"
         />
+        <input type="hidden" id="is-my" value="{{ Route::currentRouteName() === 'typing.answer-panel-my' ? 1 : 0 }}" />
 
         <!-- 回答入力フィールドにIDを追加 -->
         <input

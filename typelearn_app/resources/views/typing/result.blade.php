@@ -56,7 +56,7 @@
 
         <div class="flex justify-center flex-col items-center gap-7">
             <x-button
-                href="{{ route('typing.select-category') }}"
+                href="{{ route('typing.index') }}"
                 text="もう一度練習"
             />
             <x-back-button

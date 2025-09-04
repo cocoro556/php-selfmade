@@ -51,7 +51,7 @@
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
                 PRACTICE
             </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-xs text-gray-600 dark:text-gray-400">
                 タイピング練習でプログラミングを学習
             </p>
         </div>
@@ -72,7 +72,7 @@
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
                 MEMORY
             </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-xs text-gray-600 dark:text-gray-400">
                 自然と記憶に残る学習システム
             </p>
         </div>
@@ -91,7 +91,7 @@
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
                 EFFICIENCY
             </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-xs text-gray-600 dark:text-gray-400">
                 効率的な学習でスキルアップ
             </p>
         </div>

@@ -278,6 +278,7 @@ function loadNextQuestion() {
             current_question_id: currentQuestionId,
             category_name: categoryName,
             difficulty: difficulty,
+            is_my: document.getElementById('is-my')?.value === '1' ? 1 : 0,
         }),
     })
         .then((response) => response.json())

@@ -53,10 +53,13 @@ class QuestionController extends Controller
 
     public function list()
     {
-        $questions = Question::with('category')
-            ->where('is_template', false)
-            ->latest()
-            ->get();
+        $query = Question::with('category')->where('is_template', false);
+
+        if (auth()->user()?->role !== 'admin') {
+            $query->where('user_id', auth()->id());
+        }
+
+        $questions = $query->latest()->get();
 
         $difficultyLabels = [
             'easy' => '初級',

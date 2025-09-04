@@ -7,6 +7,8 @@ use App\Models\Question;
 use App\Models\Category;
 use App\Models\Answer;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 
 class TypingController extends Controller
 {
@@ -52,8 +54,8 @@ class TypingController extends Controller
 
         $dbDifficulty = $difficultyMap[$difficulty] ?? null;
 
-        // クエリビルダーを開始
-        $query = Question::with('category');
+        // クエリビルダーを開始（テンプレ専用）
+        $query = Question::with('category')->where('is_template', true);
 
         // カテゴリーで絞り込み
         if ($categoryName) {
@@ -87,7 +89,7 @@ class TypingController extends Controller
 
     public function checkAnswer(Request $request)
     {
-        // バリデーション
+        // バリデーション（スキップ時は answer_text に "__SKIPPED__" が入る）
         $request->validate([
             'question_id' => 'required|exists:questions,id',
             'answer_text' => 'required|string|max:1000',
@@ -97,8 +99,9 @@ class TypingController extends Controller
         // 問題を取得
         $question = Question::findOrFail($request->question_id);
 
-        // 正解かどうかチェック
-        $isCorrect = strtolower(trim($request->answer_text)) === strtolower(trim($question->correct_answer));
+        // 正解かどうかチェック（スキップは常に不正解扱い）
+        $isSkipped = $request->answer_text === '__SKIPPED__';
+        $isCorrect = $isSkipped ? false : (strtolower(trim($request->answer_text)) === strtolower(trim($question->correct_answer)));
 
         // ログインユーザーの場合のみ回答を保存
         if (auth()->check()) {
@@ -131,10 +134,12 @@ class TypingController extends Controller
             'current_question_id' => 'required|exists:questions,id',
             'category_name' => 'nullable|string',
             'difficulty' => 'nullable|string',
+            'is_my' => 'nullable|boolean',
         ]);
 
         $categoryName = $request->input('category_name');
         $difficulty = $request->input('difficulty');
+        $isMy = $request->boolean('is_my');
 
         // 難易度を英語に変換
         $difficultyMap = [
@@ -148,6 +153,13 @@ class TypingController extends Controller
 
         // クエリビルダーを開始
         $query = Question::with('category');
+
+        if ($isMy) {
+            $query->where('user_id', auth()->id())->where('is_template', false);
+        } else {
+            // テンプレモードではテンプレ問題のみ
+            $query->where('is_template', true);
+        }
 
         // カテゴリーで絞り込み
         if ($categoryName) {
@@ -201,4 +213,58 @@ class TypingController extends Controller
         }
     }
 
+    public function answerPanelMy(Request $request)
+    {
+        // 自分が作った＆テンプレではない問題からランダムに1件
+        $question = \App\Models\Question::with('category')
+            ->where('user_id', auth()->id())
+            ->where('is_template', false)
+            ->inRandomOrder()
+            ->first();
+
+        if (!$question) {
+            return redirect()->route('typing.index')
+                ->with('alert', '自作問題の登録がありません。先に作成してください。');
+        }
+
+        return view('typing.answer-panel', compact('question'));
+    }
+
+    public function history()
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        $userId = auth()->id();
+
+        // 最近の練習セッション（直近10件）: 1分単位でグルーピング
+        $recentSessions = Answer::where('user_id', $userId)
+            ->select([
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as minute_key"),
+                DB::raw('MIN(created_at) as ts'),
+                DB::raw('COUNT(*) as total'),
+                DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct'),
+                DB::raw('SUM(time_taken) as time_sec'),
+            ])
+            ->groupBy('minute_key')
+            ->orderBy('ts', 'desc')
+            ->paginate(5);
+
+        // 総合統計
+        $totalAnswers = Answer::where('user_id', $userId)->count();
+        $totalCorrect = Answer::where('user_id', $userId)->where('is_correct', true)->count();
+        $totalAccuracy = $totalAnswers > 0 ? round(($totalCorrect / $totalAnswers) * 100) : 0;
+        $avgTimeSec = $totalAnswers > 0 ? (int) round(Answer::where('user_id', $userId)->avg('time_taken')) : 0;
+        $totalSessions = Answer::where('user_id', $userId)
+            ->count(\DB::raw('DISTINCT DATE(created_at)'));
+
+        return view('typing.history', [
+            'recentSessions' => $recentSessions,
+            'totalSessions' => $totalSessions,
+            'totalAccuracy' => $totalAccuracy,
+            'totalAnswers' => $totalAnswers,
+            'avgTimeSec' => $avgTimeSec,
+        ]);
+    }
 }
