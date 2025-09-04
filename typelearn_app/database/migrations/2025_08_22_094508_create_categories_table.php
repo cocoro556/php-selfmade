@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id(); // 主キー、AUTO_INCREMENT
-            $table->string('name', 50); // カテゴリ名（例: HTML, JS）
+            $table->string('name', 50)->unique(); // カテゴリ名（例: HTML, JS）
             $table->timestamps(); // created_at, updated_at
         });
     }

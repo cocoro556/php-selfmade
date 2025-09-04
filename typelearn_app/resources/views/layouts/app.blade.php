@@ -41,6 +41,6 @@
             <!-- フッター -->
             @include('components.footer')
         </div>
-        <script src="{{ asset('js/main.js') }}"></script>
+        <script src="{{ asset('js/typing.js') }}"></script>
     </body>
 </html>

@@ -9,6 +9,17 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+    // Dynamically added classes from public/js need to be safelisted
+    safelist: [
+        'border-2',
+        'border-blue-500',
+        'border-red-500',
+        'bg-blue-900/20',
+        'bg-red-900/20',
+        'text-blue-200',
+        'text-red-200',
+    ],
+
     theme: {
         extend: {
             fontFamily: {

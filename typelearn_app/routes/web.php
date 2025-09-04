@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TypingController;
-use App\Http\Controllers\Questions;
+use App\Http\Controllers\QuestionController;
 
 // ホームページ
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -12,15 +12,17 @@ Route::get('/', [HomeController::class, 'index'])->name('home.index');
 // ダッシュボード
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
-// テンプレート問題管理（問題一覧・詳細）
-Route::get('/questions', [Questions::class, 'index'])->name('questions.index');
-Route::get('/questions/category/{category}', [Questions::class, 'category'])->name('questions.category');
-
 // タイピング練習（実際の練習）
 Route::get('/typing', [TypingController::class, 'index'])->name('typing.index');
+Route::get('/typing/select-category', [TypingController::class, 'selectCategory'])->name('typing.select-category');
 Route::get('/typing/select-difficulty/{category?}', [TypingController::class, 'selectDifficulty'])->name('typing.select-difficulty');
 Route::get('/typing/answer-panel', [TypingController::class, 'answerPanel'])->name('typing.answer-panel');
 Route::get('/typing/result', [TypingController::class, 'result'])->name('typing.result');
+
+// 問題作成
+Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+Route::get('/questions/list', [QuestionController::class, 'list'])->name('questions.list');
+Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
 
 // 認証が必要なルート
 Route::middleware('auth')->group(function () {

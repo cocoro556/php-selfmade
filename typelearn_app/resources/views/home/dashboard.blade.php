@@ -18,7 +18,7 @@
     <div class="flex gap-4">
         <x-button href="{{ route('typing.index') }}" text="タイピング練習" />
         @auth
-        <x-button href="{{ route('typing.index') }}" text="問題を管理" />
+        <x-button href="{{ route('questions.list') }}" text="問題を管理" />
         @endauth @auth
         <x-button href="{{ route('typing.index') }}" text="学習履歴" />
         @endauth

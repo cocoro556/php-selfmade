@@ -16,6 +16,7 @@ class QuestionSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::pluck('id', 'name')->all();
+        
 
         // 初級（easy）の問題 - 30問
         Question::create([
@@ -758,5 +759,8 @@ class QuestionSeeder extends Seeder
             'hint' => 'メソッドをプロパティとして扱えます',
             'difficulty' => 'hard',
         ]);
+        \App\Models\Question::whereNull('user_id')->update(['is_template' => true]);
     }
+
+    
 }

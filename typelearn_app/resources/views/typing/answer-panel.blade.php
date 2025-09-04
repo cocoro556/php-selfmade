@@ -36,6 +36,17 @@
         <!-- 問題IDを隠しフィールドで保持 -->
         <input type="hidden" id="question-id" value="{{ $question->id }}" />
         <input type="hidden" id="start-time" value="{{ time() * 1000 }}" />
+        <!-- 現在のカテゴリと難易度を保持 -->
+        <input
+            type="hidden"
+            id="current-category"
+            value="{{ request()->query('category') }}"
+        />
+        <input
+            type="hidden"
+            id="current-difficulty"
+            value="{{ request()->query('difficulty') }}"
+        />
 
         <!-- 回答入力フィールドにIDを追加 -->
         <input
@@ -73,8 +84,11 @@
     </div>
 
     <!-- 進行状況 -->
-    <div class="mt-6 text-sm text-gray-400">
-        問題: 1/6　正解: 0　時間: 00:37
+    <div id="progress-info" class="mt-6 text-sm text-gray-400">
+        問題: <span id="current-question">1</span>/<span id="total-questions"
+            >3</span
+        >　正解: <span id="correct-count">0</span>　時間:
+        <span id="elapsed-time">00:00</span>
     </div>
 
     <!-- ボタン群 -->

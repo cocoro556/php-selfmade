@@ -15,6 +15,13 @@ class TypingController extends Controller
         return view('typing.index');
     }
 
+    public function selectCategory()
+    {
+        // カテゴリー一覧を取得
+        $categories = Category::withCount('questions')->get();
+        return view('typing.select-category', compact('categories'));
+    }
+
     public function selectDifficulty($categoryName = null)
     {
         if ($categoryName && $categoryName !== 'random') {
@@ -31,7 +38,7 @@ class TypingController extends Controller
 
     public function answerPanel(Request $request)
     {
-        
+
         $categoryName = $request->query('category');
         $difficulty = $request->query('difficulty');
 
@@ -129,13 +136,6 @@ class TypingController extends Controller
         $categoryName = $request->input('category_name');
         $difficulty = $request->input('difficulty');
 
-         // デバッグログを追加
-    \Log::info('answerPanel - 受信したデータ:', [
-        'category' => $categoryName,
-        'difficulty' => $difficulty,
-        'all_query_params' => $request->all()
-    ]);
-
         // 難易度を英語に変換
         $difficultyMap = [
             'beginner' => 'easy',
@@ -145,12 +145,6 @@ class TypingController extends Controller
         ];
 
         $dbDifficulty = $difficultyMap[$difficulty] ?? null;
-
-           // デバッグログを追加
-    \Log::info('answerPanel - 難易度変換:', [
-        'original_difficulty' => $difficulty,
-        'db_difficulty' => $dbDifficulty
-    ]);
 
         // クエリビルダーを開始
         $query = Question::with('category');

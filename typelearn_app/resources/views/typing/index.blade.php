@@ -2,18 +2,18 @@
 @section('content')
 
 <div class="flex flex-col items-center justify-center min-h-screen">
- <x-section-header
-    subtitle="タイピング練習"
- />
+    <x-section-header subtitle="タイピング練習" />
 
-    <div class="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 py-5 px-20 border-2 border-gray-300 dark:border-gray-700">
+    <div
+        class="flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 py-5 px-20 border-2 rounded border-gray-300 dark:border-gray-700"
+    >
         <h3 class="text-1xl text-gray-900 dark:text-white mb-8">
             問題タイプを選択
         </h3>
 
         <div class="flex gap-4">
             <x-button
-                href="{{ route('questions.index') }}"
+                href="{{ route('typing.select-category') }}"
                 text="テンプレート問題"
                 bgColor="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
                 textColor="text-gray-900 dark:text-white"
