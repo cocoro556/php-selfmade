@@ -23,6 +23,7 @@ Route::get('/typing/result', [TypingController::class, 'result'])->name('typing.
 Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 Route::get('/questions/list', [QuestionController::class, 'list'])->name('questions.list');
 Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 
 // 認証が必要なルート
 Route::middleware('auth')->group(function () {
