@@ -37,7 +37,7 @@ class QuestionController extends Controller
         $data = [
             'user_id' => auth()->id(),                    // 未ログインなら null でもOK
             'category_id' => $validated['category'],
-            'question_text' => $validated['question'],
+            'content' => $validated['question'],
             'correct_answer' => $validated['answer'],
             'hint' => $validated['hint'] ?? null,
             'difficulty' => $validated['difficulty'],        // 'easy' | 'medium' | 'hard'
@@ -99,7 +99,7 @@ class QuestionController extends Controller
 
         $question->update([
             'category_id' => $validated['category'],
-            'question_text' => $validated['question'],
+            'content' => $validated['question'],
             'correct_answer' => $validated['answer'],
             'hint' => $validated['hint'] ?? null,
             'difficulty' => $validated['difficulty'],

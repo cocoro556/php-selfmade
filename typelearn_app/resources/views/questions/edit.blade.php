@@ -27,7 +27,7 @@
 
             <div class="flex flex-col gap-2">
                 <x-form-label for="question">問題</x-form-label>
-                <x-form-textarea name="question" id="question" rows="4" placeholder="問題文を入力してください">{{ $question->question_text }}</x-form-textarea>
+                <x-form-textarea name="question" id="question" rows="4" placeholder="問題文を入力してください">{{ $question->content }}</x-form-textarea>
             </div>
 
             <div class="flex flex-col gap-2">

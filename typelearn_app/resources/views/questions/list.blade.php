@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="text-lg text-white font-semibold mb-2">
-                    {{ $q->question_text }}
+                    {{ $q->content }}
                 </div>
                 <div class="text-sm text-gray-300">
                     正解: {{ $q->correct_answer }}

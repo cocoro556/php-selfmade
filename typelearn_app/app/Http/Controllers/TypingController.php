@@ -112,7 +112,7 @@ class TypingController extends Controller
             $answerData = [
                 'user_id' => $userId,
                 'question_id' => $question->id,
-                'answer_text' => $request->answer_text,
+                'content' => $request->answer_text,
                 'is_correct' => $isCorrect,
                 'time_taken' => $request->time_taken,
             ];
@@ -191,7 +191,7 @@ class TypingController extends Controller
             'success' => true,
             'question' => [
                 'id' => $nextQuestion->id,
-                'question_text' => $nextQuestion->question_text,
+                'content' => $nextQuestion->content,
                 'hint' => $nextQuestion->hint,
                 'category_name' => $nextQuestion->category->name,
                 'difficulty' => $nextQuestion->difficulty,

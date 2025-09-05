@@ -25,7 +25,7 @@
                 @endswitch
             </div>
         </div>
-        <div class="text-lg">{{ $question->question_text }}</div>
+        <div class="text-lg">{{ $question->content }}</div>
     </div>
 
     <!-- 解答カード -->

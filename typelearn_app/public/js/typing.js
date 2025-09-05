@@ -307,7 +307,7 @@ function updateQuestionDisplay(question) {
     // 問題テキストを更新
     const questionTextElement = document.querySelector(".text-lg");
     if (questionTextElement) {
-        questionTextElement.textContent = question.question_text;
+        questionTextElement.textContent = question.content;
     }
 
     // カテゴリー名を更新
