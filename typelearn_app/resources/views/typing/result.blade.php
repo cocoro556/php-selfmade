@@ -7,7 +7,6 @@
     <div
         class="w-full max-w-4xl rounded-lg border border-white/10 bg-slate-900/70 text-gray-200 px-8 py-6"
     >
-        <!-- 練習結果の詳細 -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div
                 class="text-center p-3 rounded-lg bg-slate-800/50 border border-gray-500/30"
@@ -44,7 +43,6 @@
             </div>
         </div>
 
-        <!-- 正解率 -->
         <div
             class="text-center mb-6 p-4 rounded-lg bg-slate-800/50 border border-gray-500/30"
         >
@@ -54,20 +52,21 @@
             <div class="text-xs text-gray-400">正解率</div>
         </div>
 
-        <!-- 不正解一覧 -->
         <div id="incorrect-container" class="mt-6">
-            <div class="text-lg font-semibold text-gray-200 mb-2">解いた問題（問題/正解）</div>
-            <ul id="incorrect-list" class="text-sm text-gray-300 list-disc pl-5"></ul>
+            <div class="text-lg font-semibold text-gray-200 mb-2">
+                解いた問題（問題 / 正解）
+            </div>
+            <ul
+                id="incorrect-list"
+                class="text-sm text-gray-300 list-disc pl-5"
+            ></ul>
         </div>
 
         <div class="flex justify-center flex-col items-center gap-7">
-            <x-button
-                href="{{ route('typing.index') }}"
-                text="もう一度練習"
-            />
+            <x-button href="{{ route('typing.index') }}" text="もう一度練習" />
             <x-back-button
                 href="{{ route('dashboard') }}"
-                text="←ダッシュボードへ戻る"
+                text="ダッシュボードへ"
             />
         </div>
     </div>

@@ -20,7 +20,6 @@
             bgColor="bg-green-200 dark:bg-green-800 hover:bg-green-300 dark:hover:bg-green-700"
             hoverColor="hover:bg-emerald-800"
         />
-
         <x-difficulty-card
             href="/typing/answer-panel?category={{ $category->name ?? '' }}&difficulty=intermediate"
             level="中級"
@@ -28,7 +27,6 @@
             bgColor="bg-yellow-300 dark:bg-yellow-800 hover:bg-yellow-400 dark:hover:bg-yellow-700"
             hoverColor="hover:bg-yellow-800"
         />
-
         <x-difficulty-card
             href="/typing/answer-panel?category={{ $category->name ?? '' }}&difficulty=advanced"
             level="上級"
@@ -43,11 +41,11 @@
             <x-button
                 href="/typing/answer-panel?category={{ $category->name ?? '' }}&difficulty=random"
                 text="ランダムで出題"
-                bgColor="bg-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500"
-                textColor="text-black dark:text-white"
+                bgColor="bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700"
+                textColor="text-gray-900 dark:text-white"
             />
         </div>
-        <div class="mb-4">
+        <div>
             <x-back-button
                 href="{{ route('typing.select-category') }}"
                 text="←問題タイプ選択に戻る"

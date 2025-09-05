@@ -7,31 +7,29 @@ use App\Models\Question;
 use App\Models\Category;
 use App\Models\Answer;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
-
 
 class TypingController extends Controller
 {
+    // トップ
     public function index()
     {
         return view('typing.index');
     }
 
+    // カテゴリ選択
     public function selectCategory()
     {
-        // カテゴリー一覧を取得
         $categories = Category::withCount('questions')->get();
         return view('typing.select-category', compact('categories'));
     }
 
+    // 難易度選択（カテゴリ指定可／ランダム）
     public function selectDifficulty($categoryName = null)
     {
         if ($categoryName && $categoryName !== 'random') {
             $category = Category::where('name', $categoryName)->first();
-            if (!$category) {
+            if (!$category)
                 abort(404);
-            }
         } else {
             $category = Category::inRandomOrder()->first();
         }
@@ -39,96 +37,72 @@ class TypingController extends Controller
         return view('typing.select-difficulty', compact('category'));
     }
 
+    // 回答パネル表示（テンプレ問題から1件）
     public function answerPanel(Request $request)
     {
-
         $categoryName = $request->query('category');
         $difficulty = $request->query('difficulty');
 
-        // 難易度を英語に変換
         $difficultyMap = [
             'beginner' => 'easy',
             'intermediate' => 'medium',
             'advanced' => 'hard',
             'random' => null
         ];
-
         $dbDifficulty = $difficultyMap[$difficulty] ?? null;
 
-        // クエリビルダーを開始（テンプレ専用）
         $query = Question::with('category')->where('is_template', true);
 
-        // カテゴリーで絞り込み
         if ($categoryName) {
             $category = Category::where('name', $categoryName)->first();
-            if (!$category) {
+            if (!$category)
                 abort(404, 'カテゴリーが見つかりません');
-            }
             $query->where('category_id', $category->id);
         }
 
-        // 難易度で絞り込み
         if ($dbDifficulty && $dbDifficulty !== 'random') {
             $query->where('difficulty', $dbDifficulty);
         }
 
-        // ランダムで問題を取得
         $question = $query->inRandomOrder()->first();
-
-        // 問題が見つからない場合
-        if (!$question) {
+        if (!$question)
             abort(404, '問題が見つかりません');
-        }
 
         return view('typing.answer-panel', compact('question'));
     }
 
-    public function result()
-    {
-        return view('typing.result');
-    }
-
+    // 回答チェック
     public function checkAnswer(Request $request)
     {
-        // バリデーション（スキップ時は answer_text に "__SKIPPED__" が入る）
         $request->validate([
             'question_id' => 'required|exists:questions,id',
             'answer_text' => 'required|string|max:1000',
             'time_taken' => 'required|integer|min:0',
         ]);
 
-        // 問題を取得
         $question = Question::findOrFail($request->question_id);
 
-        // 正解かどうかチェック（スキップは常に不正解扱い）
         $isSkipped = $request->answer_text === '__SKIPPED__';
         $isCorrect = $isSkipped ? false : (strtolower(trim($request->answer_text)) === strtolower(trim($question->correct_answer)));
 
-        // ログインユーザーの場合のみ回答を保存
         if (auth()->check()) {
-            $userId = auth()->id();
-
-            // 回答データを準備
-            $answerData = [
-                'user_id' => $userId,
+            Answer::create([
+                'user_id' => auth()->id(),
                 'question_id' => $question->id,
-                'content' => $request->answer_text,
+                'content' => $request->answer_text, // answers.content に保存
                 'is_correct' => $isCorrect,
                 'time_taken' => $request->time_taken,
-            ];
-
-            // 回答を保存
-            $answer = Answer::create($answerData);
+            ]);
         }
 
-        // 結果を返す
         return response()->json([
             'is_correct' => $isCorrect,
             'correct_answer' => $question->correct_answer,
             'message' => $isCorrect ? '正解です！' : '不正解です。正解は: ' . $question->correct_answer,
         ]);
     }
-    // 次の問題を取得するメソッドを追加
+
+    // 次の問題を取得（テンプレ or 自作）
     public function getNextQuestion(Request $request)
     {
         $request->validate([
@@ -142,40 +116,32 @@ class TypingController extends Controller
         $difficulty = $request->input('difficulty');
         $isMy = $request->boolean('is_my');
 
-        // 難易度を英語に変換
         $difficultyMap = [
             'beginner' => 'easy',
             'intermediate' => 'medium',
             'advanced' => 'hard',
             'random' => null
         ];
-
         $dbDifficulty = $difficultyMap[$difficulty] ?? null;
 
-        // クエリビルダーを開始
         $query = Question::with('category');
 
         if ($isMy) {
             $query->where('user_id', auth()->id())->where('is_template', false);
         } else {
-            // テンプレモードではテンプレ問題のみ
             $query->where('is_template', true);
         }
 
-        // カテゴリーで絞り込み
         if ($categoryName) {
             $category = Category::where('name', $categoryName)->first();
-            if ($category) {
+            if ($category)
                 $query->where('category_id', $category->id);
-            }
         }
 
-        // 難易度で絞り込み
         if ($dbDifficulty && $dbDifficulty !== 'random') {
             $query->where('difficulty', $dbDifficulty);
         }
 
-        // 現在の問題以外からランダムで問題を取得
         $nextQuestion = $query->where('id', '!=', $request->current_question_id)
             ->inRandomOrder()
             ->first();
@@ -195,11 +161,12 @@ class TypingController extends Controller
                 'hint' => $nextQuestion->hint,
                 'category_name' => $nextQuestion->category->name,
                 'difficulty' => $nextQuestion->difficulty,
-                'difficulty_name' => $this->getDifficultyName($nextQuestion->difficulty)
+                'difficulty_name' => $this->getDifficultyName($nextQuestion->difficulty),
             ]
         ]);
     }
 
+    // 難易度ラベル
     private function getDifficultyName($difficulty)
     {
         switch ($difficulty) {
@@ -214,10 +181,10 @@ class TypingController extends Controller
         }
     }
 
+    // 自作問題モード（自分の問題から1件）
     public function answerPanelMy(Request $request)
     {
-        // 自分が作った＆テンプレではない問題からランダムに1件
-        $question = \App\Models\Question::with('category')
+        $question = Question::with('category')
             ->where('user_id', auth()->id())
             ->where('is_template', false)
             ->inRandomOrder()
@@ -231,15 +198,13 @@ class TypingController extends Controller
         return view('typing.answer-panel', compact('question'));
     }
 
+    // 履歴（結果の簡易集計）
     public function history()
     {
-        if (!auth()->check()) {
+        if (!auth()->check())
             return redirect()->route('login');
-        }
 
         $userId = auth()->id();
-
-        // 追加カラム無しで「1回=3件」としてページネート
         $perPageSessions = 5;
         $page = max(1, (int) request()->get('page', 1));
         $totalAnswersForUser = Answer::where('user_id', $userId)->count();
@@ -261,7 +226,7 @@ class TypingController extends Controller
             $difficulty = $first && $first->question
                 ? $first->question->difficulty
                 : null;
-            $difficultyLabel = match($difficulty) {
+            $difficultyLabel = match ($difficulty) {
                 'easy' => '初級',
                 'medium' => '中級',
                 'hard' => '上級',
@@ -285,7 +250,6 @@ class TypingController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        // 総合統計
         $totalAnswers = Answer::where('user_id', $userId)->count();
         $totalCorrect = Answer::where('user_id', $userId)->where('is_correct', true)->count();
         $totalAccuracy = $totalAnswers > 0 ? round(($totalCorrect / $totalAnswers) * 100) : 0;
@@ -299,5 +263,11 @@ class TypingController extends Controller
             'totalAnswers' => $totalAnswers,
             'avgTimeSec' => $avgTimeSec,
         ]);
+    }
+
+    // 結果画面
+    public function result()
+    {
+        return view('typing.result');
     }
 }

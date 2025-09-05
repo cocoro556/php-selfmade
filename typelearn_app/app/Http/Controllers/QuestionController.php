@@ -8,49 +8,17 @@ use App\Models\Question;
 
 class QuestionController extends Controller
 {
-    public function create()
+    // 共通の難易度ラベル
+    private function difficultyLabels(): array
     {
-        $categories = Category::all();
-
-
-        $difficulties = [
+        return [
             'easy' => '初級',
             'medium' => '中級',
             'hard' => '上級',
         ];
-
-        return view('questions.create', compact('categories', 'difficulties'));
     }
 
-    public function store(Request $request)
-    {
-        // 入力チェック（バリデーション）
-        $validated = $request->validate([
-            'category' => ['required', 'exists:categories,id'],
-            'difficulty' => ['required', 'in:easy,medium,hard'],
-            'question' => ['required', 'string'],
-            'answer' => ['required', 'string'],
-            'hint' => ['nullable', 'string'],
-        ]);
-
-        // DB用の形に整形（カラム名に合わせる）
-        $data = [
-            'user_id' => auth()->id(),                    // 未ログインなら null でもOK
-            'category_id' => $validated['category'],
-            'content' => $validated['question'],
-            'correct_answer' => $validated['answer'],
-            'hint' => $validated['hint'] ?? null,
-            'difficulty' => $validated['difficulty'],        // 'easy' | 'medium' | 'hard'
-            'is_template' => false,
-        ];
-
-        \App\Models\Question::create($data);
-
-        return redirect()->route('questions.list')->with('status', '問題を登録しました。');
-    }
-
-
-
+    // 問題一覧（自分の問題のみ / 管理者は全件）
     public function list()
     {
         $query = Question::with('category')->where('is_template', false);
@@ -61,30 +29,60 @@ class QuestionController extends Controller
 
         $questions = $query->latest()->get();
 
-        $difficultyLabels = [
-            'easy' => '初級',
-            'medium' => '中級',
-            'hard' => '上級',
-        ];
-
-        return view('questions.list', compact('questions', 'difficultyLabels'));
+        return view('questions.list', [
+            'questions' => $questions,
+            'difficultyLabels' => $this->difficultyLabels(),
+        ]);
     }
 
+    // 作成画面
+    public function create()
+    {
+        return view('questions.create', [
+            'categories' => Category::all(),
+            'difficulties' => $this->difficultyLabels(),
+        ]);
+    }
+
+    // 保存
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => ['required', 'exists:categories,id'],
+            'difficulty' => ['required', 'in:easy,medium,hard'],
+            'question' => ['required', 'string'],
+            'answer' => ['required', 'string'],
+            'hint' => ['nullable', 'string'],
+        ]);
+
+        $data = [
+            'user_id' => auth()->id(),
+            'category_id' => $validated['category'],
+            'content' => $validated['question'],
+            'correct_answer' => $validated['answer'],
+            'hint' => $validated['hint'] ?? null,
+            'difficulty' => $validated['difficulty'],
+            'is_template' => false,
+        ];
+
+        Question::create($data);
+
+        return redirect()->route('questions.list')->with('status', '問題を登録しました。');
+    }
+
+    // 編集画面（自分の問題のみ）
     public function edit(Question $question)
     {
-        // 自分の問題のみ編集可能（管理者は別途要件に応じて拡張）
         abort_unless(auth()->id() === $question->user_id, 403);
 
-        $categories = Category::all();
-        $difficulties = [
-            'easy' => '初級',
-            'medium' => '中級',
-            'hard' => '上級',
-        ];
-
-        return view('questions.edit', compact('question', 'categories', 'difficulties'));
+        return view('questions.edit', [
+            'question' => $question,
+            'categories' => Category::all(),
+            'difficulties' => $this->difficultyLabels(),
+        ]);
     }
 
+    // 更新（自分の問題のみ）
     public function update(Request $request, Question $question)
     {
         abort_unless(auth()->id() === $question->user_id, 403);
@@ -108,14 +106,13 @@ class QuestionController extends Controller
         return redirect()->route('questions.list')->with('status', '問題を更新しました。');
     }
 
-    // app/Http/Controllers/QuestionController.php
+    // 削除（自分の問題のみ）
     public function destroy($id)
     {
-        \App\Models\Question::where('id', $id)
-            ->where('user_id', auth()->id()) // 自分の問題だけ
+        Question::where('id', $id)
+            ->where('user_id', auth()->id())
             ->delete();
 
         return back()->with('status', '問題を削除しました。');
     }
-
 }

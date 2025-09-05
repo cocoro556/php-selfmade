@@ -13,7 +13,9 @@
                 <x-form-label for="category">カテゴリ</x-form-label>
                 <x-form-select name="category" id="category">
                     @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    <option value="{{ $category->id }}">
+                        {{ $category->name }}
+                    </option>
                     @endforeach
                 </x-form-select>
             </div>
@@ -22,7 +24,7 @@
                 <x-form-label for="difficulty">難易度</x-form-label>
                 <x-form-select name="difficulty" id="difficulty">
                     @foreach($difficulties as $value => $label)
-                        <option value="{{ $value }}">{{ $label }}</option>
+                    <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
                 </x-form-select>
             </div>
