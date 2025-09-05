@@ -25,7 +25,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <a
-                            href="#"
+                            href="{{ route('questions.edit', $q->id) }}"
                             class="px-3 py-1 text-sm rounded bg-slate-600 hover:bg-slate-500"
                             >編集</a
                         >

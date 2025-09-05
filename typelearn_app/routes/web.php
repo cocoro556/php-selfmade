@@ -28,7 +28,9 @@ Route::get('/typing/answer-panel-my', [TypingController::class, 'answerPanelMy']
 Route::middleware('auth')->group(function () {
     Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
     Route::get('/questions/list', [QuestionController::class, 'list'])->name('questions.list');
+    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
     Route::post('/questions/store', [QuestionController::class, 'store'])->name('questions.store');
+    Route::patch('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
 });
 

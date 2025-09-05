@@ -13,7 +13,7 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = ['HTML', 'CSS', 'JavaScript', 'PHP', 'SQL', 'Python', 'アルゴリズム'];
+        $categories = ['HTML', 'CSS', 'JavaScript', 'PHP', 'SQL', 'Python', 'Java', 'アルゴリズム'];
 
         foreach ($categories as $name) {
             Category::create(['name' => $name]);

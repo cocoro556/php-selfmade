@@ -6,16 +6,20 @@
         <div class="rounded-lg border border-white/10 bg-slate-900/70 text-gray-200">
             <div class="px-6 py-3 border-b border-white/10 font-semibold">最近の練習結果</div>
             <div class="px-6 py-4">
-                <div class="grid grid-cols-5 text-sm text-gray-400 mb-2">
+                <div class="grid grid-cols-7 text-sm text-gray-400 mb-2">
                     <div>日時</div>
+                    <div class="text-center">カテゴリ</div>
+                    <div class="text-center">難易度</div>
                     <div class="text-center">正解数</div>
                     <div class="text-center">問題数</div>
                     <div class="text-center">正解率</div>
                     <div class="text-right">時間</div>
                 </div>
                 @forelse($recentSessions as $s)
-                    <div class="grid grid-cols-5 items-center text-sm py-1 border-t border-white/5">
+                    <div class="grid grid-cols-7 items-center text-sm py-1 border-t border-white/5">
                         <div>{{ \Illuminate\Support\Carbon::parse($s->ts)->format('Y/m/d H:i') }}</div>
+                        <div class="text-center">{{ $s->category_name }}</div>
+                        <div class="text-center">{{ $s->difficulty_label }}</div>
                         <div class="text-center">{{ $s->correct }}</div>
                         <div class="text-center">{{ $s->total }}</div>
                         <div class="text-center">{{ $s->total ? round(($s->correct / $s->total) * 100) : 0 }}%</div>

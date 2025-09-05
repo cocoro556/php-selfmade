@@ -20,6 +20,9 @@ let progressData = {
     startTime: Date.now(),
 };
 
+// 解いた問題の一時保存用（結果画面で表示する）
+let solvedList = [];
+
 // ========================================
 // 初期化処理
 // ========================================
@@ -187,44 +190,33 @@ function submitAnswer() {
             // 結果を画面に表示
             showResult(data);
 
-            // ========================================
-            // 正解時の処理
-            // ========================================
+            // ボタン連打防止
+            const checkButton = document.getElementById("check-button");
+            if (checkButton) {
+                checkButton.disabled = true;
+                checkButton.textContent = data.is_correct ? "正解！" : "不正解";
+            }
 
-            if (data.is_correct) {
-                // チェックボタンを無効化して連打を防ぐ
-                const checkButton = document.getElementById("check-button");
-                if (checkButton) {
-                    checkButton.disabled = true;
-                    checkButton.textContent = "正解！";
-                }
+            // 正解数カウント
+            const qEl = document.querySelector(".text-lg");
+            const questionText = qEl ? qEl.textContent : "";
+            addSolvedQuestion(questionText, data.correct_answer, data.is_correct);
+            if (data.is_correct) progressData.correctCount++;
 
-                // 正解数を増やす
-                progressData.correctCount++;
-
-                // ========================================
-                // 問題の進行判定
-                // ========================================
-
-                if (
-                    progressData.currentQuestion >= progressData.totalQuestions
-                ) {
-                    // 3問目完了：結果画面に移動
+            // 次の問題へ自動で進む（正解/不正解どちらでも）
+            const proceed = () => {
+                if (progressData.currentQuestion >= progressData.totalQuestions) {
                     saveTypingResult();
                     updateProgressDisplay();
-                    setTimeout(() => {
-                        window.location.href = "/typing/result";
-                    }, 1500);
+                    window.location.href = "/typing/result";
                 } else {
-                    // 次の問題へ：問題番号を増やして次の問題を読み込み
                     progressData.currentQuestion++;
                     updateProgressDisplay();
-                    setTimeout(() => {
-                        loadNextQuestion();
-                    }, 1500);
+                    loadNextQuestion();
                 }
-            }
-            // 不正解の場合は何もしない（同じ問題で継続）
+            };
+
+            setTimeout(proceed, 1000);
         })
         .catch((error) => {
             console.error("Error:", error);
@@ -385,20 +377,56 @@ function updateQuestionDisplay(question) {
  * - 3問目完了後は結果画面に移動
  */
 function skipQuestion() {
-    // 3問目をスキップした場合は結果画面に移動
-    if (progressData.currentQuestion >= progressData.totalQuestions) {
-        // 練習結果をセッションストレージに保存
-        saveTypingResult();
+    const questionId = document.getElementById("question-id").value;
+    const startTime = parseInt(document.getElementById("start-time").value);
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
 
-        updateProgressDisplay();
-        window.location.href = "/typing/result";
-        return;
-    }
+    fetch("/typing/check-answer", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({
+            question_id: questionId,
+            answer_text: "__SKIPPED__",
+            time_taken: timeTaken,
+        }),
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            const qEl = document.querySelector(".text-lg");
+            const questionText = qEl ? qEl.textContent : "";
+            addSolvedQuestion(questionText, data.correct_answer, false);
 
-    // スキップする場合、問題番号を増やして次の問題を読み込む
-    progressData.currentQuestion++;
-    updateProgressDisplay();
-    loadNextQuestion();
+            const proceed = () => {
+                if (progressData.currentQuestion >= progressData.totalQuestions) {
+                    saveTypingResult();
+                    updateProgressDisplay();
+                    window.location.href = "/typing/result";
+                } else {
+                    progressData.currentQuestion++;
+                    updateProgressDisplay();
+                    loadNextQuestion();
+                }
+            };
+
+            proceed();
+        })
+        .catch(() => {
+            // 通信に失敗した場合でも先に進める
+            const qEl = document.querySelector(".text-lg");
+            const questionText = qEl ? qEl.textContent : "";
+            addSolvedQuestion(questionText, "", false);
+            if (progressData.currentQuestion >= progressData.totalQuestions) {
+                saveTypingResult();
+                window.location.href = "/typing/result";
+            } else {
+                progressData.currentQuestion++;
+                updateProgressDisplay();
+                loadNextQuestion();
+            }
+        });
 }
 
 // ========================================
@@ -481,6 +509,10 @@ function saveTypingResult() {
         progressData.totalQuestions
     );
     sessionStorage.setItem("typing_elapsed_time", timeString);
+    // 解いた問題一覧も保存（JSON形式）
+    try {
+        sessionStorage.setItem("typing_solved_list", JSON.stringify(solvedList));
+    } catch (_) {}
 }
 
 // ========================================
@@ -527,5 +559,61 @@ function initializeResultDisplay() {
  * - 練習結果の表示
  */
 if (window.location.pathname.includes("/typing/result")) {
-    document.addEventListener("DOMContentLoaded", initializeResultDisplay);
+    document.addEventListener("DOMContentLoaded", () => {
+        initializeResultDisplay();
+        const container = document.getElementById('incorrect-container');
+        const saved = sessionStorage.getItem('typing_solved_list');
+        if (container && saved) {
+            try {
+                const items = JSON.parse(saved) || [];
+                renderSolvedList(items);
+            } catch (_) {}
+        }
+        // 使い終わったらクリア
+        sessionStorage.removeItem('typing_solved_list');
+    });
+}
+
+// 解いた問題を記録し、必要ならDOMへ追加
+function addSolvedQuestion(questionText, correctAnswer, isCorrect) {
+    solvedList.push({ questionText, correctAnswer, isCorrect });
+    try { sessionStorage.setItem('typing_solved_list', JSON.stringify(solvedList)); } catch (_) {}
+    let container = document.getElementById('incorrect-container');
+    if (!container) {
+        // 結果画面に遷移してから描画するので、ここでは一時的にsessionStorageへ積む
+    }
+    // 画面内に一覧がある場合（同ページでのプレビュー用途）
+    const list = document.getElementById('incorrect-list');
+    if (list) {
+        const li = document.createElement('li');
+        li.className = 'py-2 border-b border-white/10';
+        const badge = isCorrect ? '<span class="text-emerald-400 text-xs ml-2">(正解)</span>' : '<span class="text-rose-400 text-xs ml-2">(不正解)</span>';
+        li.innerHTML = `<div class="text-sm text-gray-300">${escapeHtml(questionText)} ${badge}</div>
+                        <div class="text-xs text-gray-400">正解: ${escapeHtml(correctAnswer)}</div>`;
+        list.appendChild(li);
+    }
+}
+
+// 結果画面で配列から描画
+function renderSolvedList(items) {
+    const list = document.getElementById('incorrect-list');
+    if (!list) return;
+    list.innerHTML = '';
+    items.forEach(({ questionText, correctAnswer, isCorrect }) => {
+        const li = document.createElement('li');
+        li.className = 'py-2 border-b border-white/10';
+        const badge = isCorrect ? '<span class="text-emerald-400 text-xs ml-2">(正解)</span>' : '<span class="text-rose-400 text-xs ml-2">(不正解)</span>';
+        li.innerHTML = `<div class="text-sm text-gray-300">${escapeHtml(questionText)} ${badge}</div>
+                        <div class="text-xs text-gray-400">正解: ${escapeHtml(correctAnswer || '')}</div>`;
+        list.appendChild(li);
+    });
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Models\Category;
 use App\Models\Answer;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -238,26 +239,58 @@ class TypingController extends Controller
 
         $userId = auth()->id();
 
-        // 最近の練習セッション（直近10件）: 1分単位でグルーピング
-        $recentSessions = Answer::where('user_id', $userId)
-            ->select([
-                DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i') as minute_key"),
-                DB::raw('MIN(created_at) as ts'),
-                DB::raw('COUNT(*) as total'),
-                DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct'),
-                DB::raw('SUM(time_taken) as time_sec'),
-            ])
-            ->groupBy('minute_key')
-            ->orderBy('ts', 'desc')
-            ->paginate(5);
+        // 追加カラム無しで「1回=3件」としてページネート
+        $perPageSessions = 5;
+        $page = max(1, (int) request()->get('page', 1));
+        $totalAnswersForUser = Answer::where('user_id', $userId)->count();
+        $totalSessionsCalc = (int) ceil($totalAnswersForUser / 3);
+
+        $offsetAnswers = ($page - 1) * $perPageSessions * 3;
+        $answersSlice = Answer::where('user_id', $userId)
+            ->with(['question.category'])
+            ->orderBy('created_at', 'desc')
+            ->skip($offsetAnswers)
+            ->take($perPageSessions * 3)
+            ->get();
+
+        $sessionsCollection = $answersSlice->chunk(3)->map(function ($chunk) {
+            $first = $chunk->first();
+            $categoryName = $first && $first->question && $first->question->category
+                ? $first->question->category->name
+                : '-';
+            $difficulty = $first && $first->question
+                ? $first->question->difficulty
+                : null;
+            $difficultyLabel = match($difficulty) {
+                'easy' => '初級',
+                'medium' => '中級',
+                'hard' => '上級',
+                default => '未分類',
+            };
+            return (object) [
+                'ts' => optional($chunk->first())->created_at,
+                'total' => $chunk->count(),
+                'correct' => $chunk->where('is_correct', true)->count(),
+                'time_sec' => (int) $chunk->sum('time_taken'),
+                'category_name' => $categoryName,
+                'difficulty_label' => $difficultyLabel,
+            ];
+        });
+
+        $recentSessions = new LengthAwarePaginator(
+            $sessionsCollection,
+            $totalSessionsCalc,
+            $perPageSessions,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         // 総合統計
         $totalAnswers = Answer::where('user_id', $userId)->count();
         $totalCorrect = Answer::where('user_id', $userId)->where('is_correct', true)->count();
         $totalAccuracy = $totalAnswers > 0 ? round(($totalCorrect / $totalAnswers) * 100) : 0;
         $avgTimeSec = $totalAnswers > 0 ? (int) round(Answer::where('user_id', $userId)->avg('time_taken')) : 0;
-        $totalSessions = Answer::where('user_id', $userId)
-            ->count(\DB::raw('DISTINCT DATE(created_at)'));
+        $totalSessions = $totalSessionsCalc;
 
         return view('typing.history', [
             'recentSessions' => $recentSessions,

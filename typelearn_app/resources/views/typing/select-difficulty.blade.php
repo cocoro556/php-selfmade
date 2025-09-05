@@ -41,7 +41,7 @@
     <div class="mt-8 text-center">
         <div class="mb-4">
             <x-button
-                href="/typing/answer-panel?difficulty=random"
+                href="/typing/answer-panel?category={{ $category->name ?? '' }}&difficulty=random"
                 text="ランダムで出題"
                 bgColor="bg-gray-200 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-500"
                 textColor="text-black dark:text-white"
@@ -57,6 +57,3 @@
     </div>
 </div>
 @endsection
-
-<!-- これはエラーになる難易度選択 -->
-<!-- href="{{ route('typing.answer-panel', ['category' => $category->name ?? null, 'difficulty' => 'random']) }}" -->

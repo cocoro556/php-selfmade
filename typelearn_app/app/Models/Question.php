@@ -9,7 +9,7 @@ class Question extends Model
     protected $fillable = [
         'user_id',
         'category_id',
-        'question_text',
+        'content',
         'correct_answer',
         'hint',
         'difficulty',

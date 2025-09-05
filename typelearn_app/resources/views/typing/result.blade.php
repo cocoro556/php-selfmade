@@ -54,13 +54,19 @@
             <div class="text-xs text-gray-400">正解率</div>
         </div>
 
+        <!-- 不正解一覧 -->
+        <div id="incorrect-container" class="mt-6">
+            <div class="text-lg font-semibold text-gray-200 mb-2">解いた問題（問題/正解）</div>
+            <ul id="incorrect-list" class="text-sm text-gray-300 list-disc pl-5"></ul>
+        </div>
+
         <div class="flex justify-center flex-col items-center gap-7">
             <x-button
                 href="{{ route('typing.index') }}"
                 text="もう一度練習"
             />
             <x-back-button
-                href="{{ route('typing.index') }}"
+                href="{{ route('dashboard') }}"
                 text="←ダッシュボードへ戻る"
             />
         </div>
