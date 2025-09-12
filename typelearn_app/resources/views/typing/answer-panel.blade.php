@@ -85,7 +85,7 @@
         <span id="elapsed-time">00:00</span>
     </div>
 
-    <div class="mt-6 flex justify-center gap-4">
+    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
         <button
             id="check-button"
             class="flex items-center justify-center w-48 h-12 px-6 py-2 border border-gray-500 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium"
