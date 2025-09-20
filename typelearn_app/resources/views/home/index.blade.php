@@ -23,7 +23,7 @@
             @csrf
             <button
                 type="submit"
-                class="flex items-center justify-center w-48 h-12 px-6 py-2 border border-gray-500 rounded bg-gray-100 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
+                class="flex items-center justify-center w-48 h-12 px-6 py-2 border border-red-500 rounded bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-200 font-semibold"
             >
                 LOGOUT
             </button>

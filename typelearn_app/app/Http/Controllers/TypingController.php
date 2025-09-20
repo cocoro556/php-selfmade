@@ -208,17 +208,17 @@ class TypingController extends Controller
         $perPageSessions = 5;
         $page = max(1, (int) request()->get('page', 1));
         $totalAnswersForUser = Answer::where('user_id', $userId)->count();
-        $totalSessionsCalc = (int) ceil($totalAnswersForUser / 3);
+        $totalSessionsCalc = (int) ceil($totalAnswersForUser / 5);
 
-        $offsetAnswers = ($page - 1) * $perPageSessions * 3;
+        $offsetAnswers = ($page - 1) * $perPageSessions * 5;
         $answersSlice = Answer::where('user_id', $userId)
             ->with(['question.category'])
             ->orderBy('created_at', 'desc')
             ->skip($offsetAnswers)
-            ->take($perPageSessions * 3)
+            ->take($perPageSessions * 5)
             ->get();
 
-        $sessionsCollection = $answersSlice->chunk(3)->map(function ($chunk) {
+        $sessionsCollection = $answersSlice->chunk(5)->map(function ($chunk) {
             $first = $chunk->first();
             $categoryName = $first && $first->question && $first->question->category
                 ? $first->question->category->name

@@ -9,13 +9,13 @@
 /**
  * 練習の進行状況を管理するデータ
  * - currentQuestion: 現在の問題番号（1から開始）
- * - totalQuestions: 総問題数（3問で固定）
+ * - totalQuestions: 総問題数（5問で固定）
  * - correctCount: 正解数
  * - startTime: 練習開始時刻
  */
 let progressData = {
     currentQuestion: 1,
-    totalQuestions: 3,
+    totalQuestions: 5,
     correctCount: 0,
     startTime: Date.now(),
 };
@@ -200,7 +200,7 @@ function submitAnswer() {
             // 正解数カウント
             const qEl = document.querySelector(".text-lg");
             const questionText = qEl ? qEl.textContent : "";
-            addSolvedQuestion(questionText, data.correct_answer, data.is_correct);
+            addSolvedQuestion(questionText, data.correct_answer, data.is_correct, answerText);
             if (data.is_correct) progressData.correctCount++;
 
             // 次の問題へ自動で進む（正解/不正解どちらでも）
@@ -239,7 +239,7 @@ function loadNextQuestion() {
     // 問題数の上限チェック
     // ========================================
 
-    // 3問目を解き終わった後に結果画面へ移動
+    // 5問目を解き終わった後に結果画面へ移動
     if (progressData.currentQuestion > progressData.totalQuestions) {
         window.location.href = "/typing/result";
         return;
@@ -397,7 +397,7 @@ function skipQuestion() {
         .then((data) => {
             const qEl = document.querySelector(".text-lg");
             const questionText = qEl ? qEl.textContent : "";
-            addSolvedQuestion(questionText, data.correct_answer, false);
+            addSolvedQuestion(questionText, data.correct_answer, false, "__SKIPPED__");
 
             const proceed = () => {
                 if (progressData.currentQuestion >= progressData.totalQuestions) {
@@ -417,7 +417,7 @@ function skipQuestion() {
             // 通信に失敗した場合でも先に進める
             const qEl = document.querySelector(".text-lg");
             const questionText = qEl ? qEl.textContent : "";
-            addSolvedQuestion(questionText, "", false);
+            addSolvedQuestion(questionText, "", false, "__ERROR__");
             if (progressData.currentQuestion >= progressData.totalQuestions) {
                 saveTypingResult();
                 window.location.href = "/typing/result";
@@ -528,7 +528,7 @@ function initializeResultDisplay() {
     // セッションストレージから練習結果を取得
     const correctCount = sessionStorage.getItem("typing_correct_count") || 0;
     const totalQuestions =
-        sessionStorage.getItem("typing_total_questions") || 3;
+        sessionStorage.getItem("typing_total_questions") || 5;
     const elapsedTime =
         sessionStorage.getItem("typing_elapsed_time") || "00:00";
 
@@ -575,8 +575,8 @@ if (window.location.pathname.includes("/typing/result")) {
 }
 
 // 解いた問題を記録し、必要ならDOMへ追加
-function addSolvedQuestion(questionText, correctAnswer, isCorrect) {
-    solvedList.push({ questionText, correctAnswer, isCorrect });
+function addSolvedQuestion(questionText, correctAnswer, isCorrect, userAnswer = '') {
+    solvedList.push({ questionText, correctAnswer, isCorrect, userAnswer });
     try { sessionStorage.setItem('typing_solved_list', JSON.stringify(solvedList)); } catch (_) {}
     let container = document.getElementById('incorrect-container');
     if (!container) {
@@ -588,8 +588,26 @@ function addSolvedQuestion(questionText, correctAnswer, isCorrect) {
         const li = document.createElement('li');
         li.className = 'py-2 border-b border-white/10';
         const badge = isCorrect ? '<span class="text-emerald-400 text-xs ml-2">(正解)</span>' : '<span class="text-rose-400 text-xs ml-2">(不正解)</span>';
+        
+        let userAnswerDisplay = '';
+        if (userAnswer && userAnswer !== '__SKIPPED__' && userAnswer !== '__ERROR__') {
+            // 不正解の場合のみ「あなたの回答」を表示
+            if (!isCorrect) {
+                const answerColor = 'text-red-500';
+                userAnswerDisplay = `<div class="text-xs ${answerColor}">あなたの回答: ${escapeHtml(userAnswer)}</div>`;
+            }
+        } else if (userAnswer === '__SKIPPED__') {
+            userAnswerDisplay = '<div class="text-xs text-yellow-400">スキップ</div>';
+        } else if (userAnswer === '__ERROR__') {
+            userAnswerDisplay = '<div class="text-xs text-gray-400">エラー</div>';
+        }
+        
+        // 正解の表示も色分け（インラインスタイルを使用）
+        const correctAnswerStyle = isCorrect ? 'color: #4ade80;' : 'color: #9ca3af;';
+        
         li.innerHTML = `<div class="text-sm text-gray-300">${escapeHtml(questionText)} ${badge}</div>
-                        <div class="text-xs text-gray-400">正解: ${escapeHtml(correctAnswer)}</div>`;
+                        <div class="text-xs" style="${correctAnswerStyle}">正解: ${escapeHtml(correctAnswer)}</div>
+                        ${userAnswerDisplay}`;
         list.appendChild(li);
     }
 }
@@ -599,12 +617,31 @@ function renderSolvedList(items) {
     const list = document.getElementById('incorrect-list');
     if (!list) return;
     list.innerHTML = '';
-    items.forEach(({ questionText, correctAnswer, isCorrect }) => {
+    items.forEach(({ questionText, correctAnswer, isCorrect, userAnswer = '' }) => {
         const li = document.createElement('li');
         li.className = 'py-2 border-b border-white/10';
+        
         const badge = isCorrect ? '<span class="text-emerald-400 text-xs ml-2">(正解)</span>' : '<span class="text-rose-400 text-xs ml-2">(不正解)</span>';
+        
+        let userAnswerDisplay = '';
+        if (userAnswer && userAnswer !== '__SKIPPED__' && userAnswer !== '__ERROR__') {
+            // 不正解の場合のみ「あなたの回答」を表示
+            if (!isCorrect) {
+                const answerColor = 'text-red-500';
+                userAnswerDisplay = `<div class="text-xs ${answerColor}">あなたの回答: ${escapeHtml(userAnswer)}</div>`;
+            }
+        } else if (userAnswer === '__SKIPPED__') {
+            userAnswerDisplay = '<div class="text-xs text-yellow-400">スキップ</div>';
+        } else if (userAnswer === '__ERROR__') {
+            userAnswerDisplay = '<div class="text-xs text-gray-400">エラー</div>';
+        }
+        
+        // 正解の表示も色分け（インラインスタイルを使用）
+        const correctAnswerStyle = isCorrect ? 'color: #4ade80;' : 'color: #9ca3af;';
+        
         li.innerHTML = `<div class="text-sm text-gray-300">${escapeHtml(questionText)} ${badge}</div>
-                        <div class="text-xs text-gray-400">正解: ${escapeHtml(correctAnswer || '')}</div>`;
+                        <div class="text-xs" style="${correctAnswerStyle}">正解: ${escapeHtml(correctAnswer || '')}</div>
+                        ${userAnswerDisplay}`;
         list.appendChild(li);
     });
 }
@@ -616,4 +653,32 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+}
+
+function filterUsers(role) {
+    // テーブル行をフィルタリング
+    const rows = document.querySelectorAll('#user-table tr');
+    rows.forEach(row => {
+        if (role === 'all' || row.dataset.role === role) {
+            row.style.display = '';   // 表示
+        } else {
+            row.style.display = 'none'; // 非表示
+        }
+    });
+    
+    // ボタンのアクティブ状態を更新
+    const buttons = ['btn-all', 'btn-user', 'btn-admin'];
+    buttons.forEach(btnId => {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.className = btn.className.replace(/bg-blue-600|bg-gray-200|bg-gray-700/g, '');
+            btn.className = btn.className.replace(/text-white|text-gray-700|text-gray-300/g, '');
+            
+            if (btnId === `btn-${role}`) {
+                btn.className += ' bg-blue-600 text-white hover:bg-blue-700';
+            } else {
+                btn.className += ' bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600';
+            }
+        }
+    });
 }

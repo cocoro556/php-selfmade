@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TypingController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AdminController;
 
 // ホームページ
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -36,6 +37,25 @@ Route::middleware('auth')->group(function () {
 
 // 学習履歴
 Route::get('/typing/history', [TypingController::class, 'history'])->name('typing.history');
+
+// 管理者ログイン（未認証でもアクセス可）
+Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
+Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
+
+// 管理者ページ（認証＋管理者権限必要）
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/questions', [AdminController::class, 'questions'])->name('admin.questions');
+    Route::get('/questions/{question}/edit', [AdminController::class, 'editQuestion'])->name('admin.questions.edit');
+    Route::put('/questions/{question}', [AdminController::class, 'updateQuestion'])->name('admin.questions.update');
+    Route::get('/questions/create', [AdminController::class, 'createQuestion'])->name('admin.questions.create');
+    Route::post('/questions', [AdminController::class, 'storeQuestion'])->name('admin.questions.store');
+    Route::delete('/questions/{question}', [AdminController::class, 'destroyQuestion'])->name('admin.questions.destroy');
+});
 
 
 // 認証が必要なルート

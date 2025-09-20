@@ -7,6 +7,10 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+cd typelearn_app && cp -n .env.example .env && composer install && php artisan key:generate && php artisan migrate --seed && php artisan serve
+
+cp -n typelearn_app/.env.example typelearn_app/.env && docker compose up -d --build && docker compose exec app php artisan key:generate && docker compose exec app php artisan migrate --seed
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

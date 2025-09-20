@@ -15,7 +15,7 @@
 @endauth
 
 
-    <div class="flex gap-4">
+    <div class="flex gap-4 flex-col">
         <x-button href="{{ route('typing.index') }}" text="タイピング練習" />
         @auth
         <x-button href="{{ route('questions.list') }}" text="問題を管理" />

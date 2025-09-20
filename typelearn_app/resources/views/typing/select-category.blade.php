@@ -43,9 +43,9 @@
                 description="データベース言語"
             />
             <x-category-card
-                href="{{ route('typing.select-difficulty', 'アルゴリズム') }}"
-                name="アルゴリズム"
-                description="プログラミング基礎"
+                href="{{ route('typing.select-difficulty', 'Laravel') }}"
+                name="Laravel"
+                description="PHPフレームワーク"
             />
         </div>
 

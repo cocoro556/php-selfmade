@@ -26,7 +26,7 @@
                     class="text-2xl font-bold text-gray-200 mb-1"
                     id="total-questions"
                 >
-                    3
+                    5
                 </div>
                 <div class="text-xs text-gray-400">総問題数</div>
             </div>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="flex justify-center flex-col items-center gap-7">
-            <x-button href="{{ route('typing.index') }}" text="もう一度練習" />
+            <x-button href="{{ route('typing.select-category') }}" text="もう一度練習" />
             <x-back-button
                 href="{{ route('dashboard') }}"
                 text="ダッシュボードへ"
