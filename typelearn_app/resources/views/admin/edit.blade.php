@@ -14,20 +14,26 @@
                 <x-form-label for="category">カテゴリ</x-form-label>
                 <x-form-select name="category" id="category">
                     @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ $question->category_id == $category->id ? 'selected' : '' }}>
+                    <option value="{{ $category->id }}" {{ (old('category', $question->category_id) == $category->id) ? 'selected' : '' }}>
                         {{ $category->name }}
                     </option>
                     @endforeach
                 </x-form-select>
+                @error('category')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex flex-col gap-2">
                 <x-form-label for="difficulty">難易度</x-form-label>
                 <x-form-select name="difficulty" id="difficulty">
                     @foreach($difficulties as $value => $label)
-                    <option value="{{ $value }}" {{ $question->difficulty == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    <option value="{{ $value }}" {{ (old('difficulty', $question->difficulty) == $value) ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </x-form-select>
+                @error('difficulty')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex flex-col gap-2">
@@ -38,6 +44,9 @@
                     rows="4"
                     placeholder="問題文を入力してください"
                 >{{ old('question', $question->content) }}</x-form-textarea>
+                @error('question')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex flex-col gap-2">
@@ -48,6 +57,9 @@
                     rows="3"
                     placeholder="正解を入力してください"
                 >{{ old('answer', $question->correct_answer) }}</x-form-textarea>
+                @error('answer')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex flex-col gap-2">
@@ -58,6 +70,9 @@
                     rows="2"
                     placeholder="ヒントを入力してください（任意）"
                 >{{ old('hint', $question->hint) }}</x-form-textarea>
+                @error('hint')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="flex items-center justify-center gap-5 mt-6">
