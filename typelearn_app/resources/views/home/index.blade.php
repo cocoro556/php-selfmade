@@ -9,7 +9,7 @@
     />
 
     <!-- ボタン群 -->
-    <div class="flex gap-16 justify-center">
+    <div class="flex flex-col md:flex-row gap-4 md:gap-16 justify-center">
         @guest
         <x-button href="{{ route('login') }}" text="LOGIN" />
         <x-button href="{{ route('register') }}" text="REGISTER" />
@@ -34,7 +34,7 @@
 
     <x-borderline width="w-[70%] mt-10" />
     <!-- 特徴セクション -->
-    <div class="flex gap-20 justify-center mt-10">
+    <div class="flex flex-col md:flex-row gap-8 md:gap-20 justify-center mt-10">
         <!-- PRACTICE -->
         <div class="text-center w-48">
             <svg

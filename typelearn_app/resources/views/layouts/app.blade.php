@@ -21,22 +21,22 @@
         >
             <!-- 左上 -->
             <div
-                class="fixed top-4 left-8 w-10 h-10 border-t-2 border-l-2 border-gray-500 z-50"
+                class="hidden md:block fixed top-4 left-8 w-10 h-10 border-t-2 border-l-2 border-gray-500 z-50"
             ></div>
 
             <!-- 右上 -->
             <div
-                class="fixed top-4 right-8 w-10 h-10 border-t-2 border-r-2 border-gray-500 z-50"
+                class="hidden md:block fixed top-4 right-8 w-10 h-10 border-t-2 border-r-2 border-gray-500 z-50"
             ></div>
 
             <!-- 左下 -->
             <div
-                class="fixed bottom-4 left-8 w-10 h-10 border-b-2 border-l-2 border-gray-500 z-50"
+                class="hidden md:block fixed bottom-4 left-8 w-10 h-10 border-b-2 border-l-2 border-gray-500 z-50"
             ></div>
 
             <!-- 右下 -->
             <div
-                class="fixed bottom-4 right-8 w-10 h-10 border-b-2 border-r-2 border-gray-500 z-50"
+                class="hidden md:block fixed bottom-4 right-8 w-10 h-10 border-b-2 border-r-2 border-gray-500 z-50"
             ></div>
             <main class="flex-1">@yield('content')</main>
 

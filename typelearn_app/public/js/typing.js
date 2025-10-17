@@ -212,6 +212,7 @@ function submitAnswer() {
                 } else {
                     progressData.currentQuestion++;
                     updateProgressDisplay();
+                    resetHintButton();
                     loadNextQuestion();
                 }
             };
@@ -223,6 +224,16 @@ function submitAnswer() {
             alert("通信エラーが発生しました");
         });
 }
+function resetHintButton() {
+    const hintCard = document.getElementById("hint-card");
+    const hintButton = document.getElementById("hint-button");
+
+    if (hintCard && hintButton) {
+        hintCard.classList.add("hidden");
+        hintButton.textContent = "ヒントを見る";
+    }
+}
+
 
 // ========================================
 // 次の問題の読み込み
@@ -232,7 +243,6 @@ function submitAnswer() {
  * 次の問題を読み込む
  * - 現在の問題ID、カテゴリー、難易度をサーバーに送信
  * - 次の問題の情報を取得して画面を更新
- * - 3問目完了後は結果画面に移動
  */
 function loadNextQuestion() {
     // ========================================
@@ -374,7 +384,6 @@ function updateQuestionDisplay(question) {
 /**
  * 問題をスキップ
  * - 現在の問題をスキップして次の問題へ
- * - 3問目完了後は結果画面に移動
  */
 function skipQuestion() {
     const questionId = document.getElementById("question-id").value;
@@ -407,6 +416,7 @@ function skipQuestion() {
                 } else {
                     progressData.currentQuestion++;
                     updateProgressDisplay();
+                    resetHintButton();
                     loadNextQuestion();
                 }
             };
